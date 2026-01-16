@@ -1,0 +1,48 @@
+from django.shortcuts import render
+from rest_framework import generics, permissions
+from .models import *
+from .serializers import *
+from .permissions import IsAdmin
+
+# Create your views here.
+
+
+# CLIENT
+class ComplaintCreateView(generics.CreateAPIView):
+    serializer_class = ComplaintSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class ComplaintDetailView(generics.RetrieveAPIView):
+    queryset = Complaint.objects.all()
+    serializer_class = ComplaintSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class FeedbackCreateView(generics.CreateAPIView):
+    serializer_class = FeedbackSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+# ADMIN
+class ComplaintListAdminView(generics.ListAPIView):
+    queryset = Complaint.objects.all()
+    serializer_class = ComplaintSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+
+class ComplaintStatusUpdateView(generics.UpdateAPIView):
+    queryset = Complaint.objects.all()
+    serializer_class = ComplaintSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+
+class AdminResponseCreateView(generics.CreateAPIView):
+    serializer_class = AdminResponseSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def perform_create(self, serializer):
+        serializer.save(admin=self.request.user)
